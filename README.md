@@ -205,3 +205,21 @@ AI Eval is built around three engineering questions:
 > **Did my latest change improve or degrade reliability?**
 
 The goal is not to make another chatbot. It is to build the **testing infrastructure that helps developers understand whether their AI systems are reliable enough to ship**.
+
+
+## Author
+
+**Michael Olubode**
+
+Software Engineer | AI Engineer
+
+Built as a hands-on project to explore AI evaluation,
+agent reliability, and regression testing.
+
+## License
+
+This project is licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for more details.
+
+Copyright © 2026 Michael Olubode.
