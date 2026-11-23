@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2090" height="350" viewBox="0 0 2090 350">
+<defs><marker id="smallArrow" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L7.5,4.5 L1,8" fill="none" stroke="#A9ADB3" stroke-width="1.25" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="2090" height="350" fill="#0B0C0E"/>
+<path d="M416,102 L455,102 L455,76 L485,76" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M416,117 L447,117 L447,259 L485,259" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M771,76 L827,76" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M771,259 L827,259" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M1209,76 L1260,76" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M1209,259 L1243,259 L1243,136 L1260,136" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M1515,96 L1580,96 L1580,79 L1730,79" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M1515,133 L1549,133 L1549,259 L1730,259" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<rect x="14" y="41" width="402" height="120" rx="26" fill="#0D1117" stroke="#37C5F5" stroke-width="2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="215.0" y="108.9">Fixed Evaluation Dataset</tspan></text>
+<rect x="485" y="17" width="286" height="118" rx="25" fill="#101B21" stroke="#17D6EE" stroke-width="2.2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="628.0" y="70.0">Application v1</tspan><tspan x="628.0" y="97.8">Baseline</tspan></text>
+<rect x="485" y="199" width="286" height="118" rx="25" fill="#101B21" stroke="#17D6EE" stroke-width="2.2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="628.0" y="252.0">Application v2</tspan><tspan x="628.0" y="279.8">Candidate</tspan></text>
+<rect x="827" y="22" width="382" height="112" rx="26" fill="#151727" stroke="#A4ABFF" stroke-width="2.0" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1018.0" y="85.9">Evaluation Results v1</tspan></text>
+<rect x="827" y="204" width="382" height="112" rx="26" fill="#151727" stroke="#A4ABFF" stroke-width="2.0" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1018.0" y="267.9">Evaluation Results v2</tspan></text>
+<rect x="1260" y="37" width="255" height="118" rx="27" fill="#221B11" stroke="#F1C232" stroke-width="2" stroke-dasharray="4 5"/>
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1387.5" y="90.0">Regression</tspan><tspan x="1387.5" y="117.8">Detected?</tspan></text>
+<rect x="1730" y="22" width="341" height="114" rx="28" fill="#271414" stroke="#EE959B" stroke-width="2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1900.5" y="86.6">Investigate Failures</tspan></text>
+<rect x="1730" y="204" width="341" height="112" rx="28" fill="#102016" stroke="#78E2A6" stroke-width="2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1900.5" y="267.6">Review for Release</tspan></text>
+<rect x="1580" y="55" width="90" height="49" rx="26" fill="#071824" stroke="#6BA9E1" stroke-width="1.6" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1625.0" y="86.4">Yes</tspan></text>
+<rect x="1580" y="235" width="90" height="49" rx="26" fill="#071824" stroke="#6BA9E1" stroke-width="1.6" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="1625.0" y="266.4">No</tspan></text>
+</svg>

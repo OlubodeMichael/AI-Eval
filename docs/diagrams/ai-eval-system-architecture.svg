@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1640" viewBox="0 0 1100 1640">
+<defs><marker id="smallArrow" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L7.5,4.5 L1,8" fill="none" stroke="#A9ADB3" stroke-width="1.25" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1100" height="1640" fill="#0B0C0E"/>
+<rect x="38" y="198" width="1024" height="425" rx="0" fill="#2C2D2F" stroke="#4A4A4F" stroke-width="1.2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="400" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="232.6">Connection &amp; Execution</tspan></text>
+<rect x="38" y="686" width="1024" height="238" rx="0" fill="#2C2D2F" stroke="#4A4A4F" stroke-width="1.2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="400" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="724.6">Evaluation Engine</tspan></text>
+<rect x="147" y="972" width="806" height="614" rx="0" fill="#2C2D2F" stroke="#4A4A4F" stroke-width="1.2" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="400" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="1011.6">Analysis &amp; Reporting</tspan></text>
+<path d="M550,143 L550,166 L796,166 L796,278" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M278,378 L278,421 L427,421 L427,447" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M796,378 L796,419 L690,419 L690,447" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M550,566 L550,657 L290,657 L290,772" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M550,566 L550,645 L820,645 L820,772" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M290,892 L290,1241 L430,1241 L430,1280" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M820,892 L820,1030 L554,1030 L554,1080" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M820,892 L820,1220 L687,1220 L687,1280" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M554,1180 L554,1280" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<path d="M554,1385 L554,1460" fill="none" stroke="#A9ADB3" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#smallArrow)" />
+<rect x="324" y="34" width="452" height="109" rx="27" fill="#0C1117" stroke="#37C5F5" stroke-width="2.7" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="82.8">AI Application Under Test</tspan><tspan x="550.0" y="109.4">Chatbot · Agent · RAG · API</tspan></text>
+<rect x="78" y="278" width="434" height="100" rx="24" fill="#102026" stroke="#17D6EE" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="295.0" y="322.5">Evaluation Dataset</tspan><tspan x="295.0" y="348.0">Inputs · Expected Behavior · Labels</tspan></text>
+<rect x="588" y="278" width="434" height="100" rx="24" fill="#102026" stroke="#17D6EE" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="805.0" y="322.5">Application Adapter</tspan><tspan x="805.0" y="348.0">Python · API · Saved Runs</tspan></text>
+<rect x="325" y="447" width="450" height="119" rx="26" fill="#102026" stroke="#17D6EE" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="500.8">Evaluation Runner</tspan><tspan x="550.0" y="527.4">Responses · Tool Calls · Traces</tspan></text>
+<rect x="80" y="772" width="430" height="120" rx="23" fill="#161724" stroke="#A4ABFF" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="295.0" y="826.2">Deterministic Checks</tspan><tspan x="295.0" y="852.9">Pytest · Pydantic · Rules</tspan></text>
+<rect x="590" y="772" width="430" height="120" rx="23" fill="#161724" stroke="#A4ABFF" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="805.0" y="826.2">AI-Based Judgments</tspan><tspan x="805.0" y="852.9">DeepEval · LLM Judge · Jev</tspan></text>
+<rect x="321" y="1080" width="466" height="100" rx="22" fill="#0E201C" stroke="#47E4CC" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="554.0" y="1124.5">Judge Benchmarking</tspan><tspan x="554.0" y="1150.0">Compare With Human Labels</tspan></text>
+<rect x="264" y="1280" width="572" height="105" rx="24" fill="#0E201C" stroke="#47E4CC" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="550.0" y="1326.5">Evaluation Report</tspan><tspan x="550.0" y="1354.3">Scores · Failures · Evidence</tspan></text>
+<rect x="320" y="1460" width="468" height="103" rx="24" fill="#0E201C" stroke="#47E4CC" stroke-width="2.5" />
+<text font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" fill="#F1F1F3" text-anchor="middle"><tspan x="554.0" y="1505.8">Regression Analyzer</tspan><tspan x="554.0" y="1532.4">Compare Application Versions</tspan></text>
+</svg>
