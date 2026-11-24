@@ -1,225 +1,266 @@
 # AI Eval
 
-### An AI application testing and reliability framework
+**An open-source, local-first AI evaluation workbench.**
 
-**AI Eval** is a reusable evaluation harness designed to test AI applications, measure their reliability, validate agent behavior, and detect regressions between versions.
+AI Eval is a Python tool that developers can **fork from GitHub and run locally with Docker** to evaluate responses from their own AI applications. A lightweight **Streamlit web interface** makes it possible to paste a single AI response or upload a dataset, select applicable evaluations, and review the results—without configuring a hosted platform or writing a custom test harness.
 
-Traditional tests can check exact outputs. AI applications also need tests for behaviors that are harder to define precisely: whether an answer is supported by evidence, whether an agent selected the right tool, and whether its response followed instructions. AI Eval combines **deterministic checks** with **AI-based judgments** and makes the results comparable and explainable.
+AI Eval is **framework-independent**. Whether an application uses LangChain, LangGraph, an LLM SDK, a RAG pipeline, or a custom backend, the initial version evaluates the **outputs and evidence the developer supplies**.
 
-> **Project status:** Architecture and design specification. The diagrams and reports below describe the intended system; sample scores are illustrative, not measured results.
+> **Project status: design / early implementation.** This README describes the intended user experience and architecture. Screens, Docker commands, example metrics, and reports are targets for implementation, **not claims of currently working features**.
 
-## At a glance
+## What AI Eval does
 
-| | |
-| --- | --- |
-| **Goal** | Evaluate AI applications systematically, rather than manually reviewing individual outputs. |
-| **Applications** | AI agents, chatbots, RAG applications, and other AI-powered APIs. |
-| **Core stack** | Python, LangChain, Pytest, Pydantic, DeepEval, and Jev (TypeSafe AI). |
-| **Output** | Per-test results, failure explanations, judge comparisons, and regression reports. |
-| **Design principle** | Test the **behavior** of an application, not only the wording of its final answer. |
+- **Quick evaluation:** Paste a prompt and its AI-generated answer to inspect one response.
+- **Batch evaluation:** Upload JSON or CSV records for multiple responses.
+- **Deterministic checks:** Validate explicit requirements such as expected values, schema constraints, and recorded tool calls.
+- **AI-based evaluation:** Use DeepEval and configured LLM judges to assess qualities such as relevance and adherence; explore Jev (TypeSafe AI) where the metric and integration support it.
+- **Evidence-aware metrics:** Only run checks supported by the submitted fields; explain when a test is *not evaluable*.
+- **Results and exports:** Inspect per-case outcomes, failure explanations, and summary metrics; export findings locally.
+- **Regression and judge comparison (planned extensions):** Compare two versions' outputs and benchmark AI judges against labeled cases.
 
-## System Architecture
+**AI Eval does not build or train a machine-learning model.** It uses existing AI evaluation tools and externally configured models where needed.
 
-The diagram below illustrates how AI Eval connects to AI applications,
-runs evaluations, and generates reliability reports.
+## Developer experience
 
-![AI Eval System Architecture](docs/diagrams/ai-eval-system-architecture.svg)
+The goal is to make evaluation a simple three-step process:
 
-### Component responsibilities
+1. **Provide responses.** Paste an input and output for a quick check, or upload a CSV/JSON dataset.
+2. **Select evaluations.** Choose relevant checks; AI Eval indicates which ones have enough evidence to run.
+3. **Review results.** See scores, failures, explanations, and downloadable reports.
+
+### Quick evaluation
+
+For a basic response evaluation, the developer needs only **two fields**:
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `input` | Yes | The request sent to the AI application. |
+| `actual_output` | Yes | The answer returned by the application. |
+| `expected_output` | No | A reference answer or required content, for correctness comparisons. |
+| `context` | No | Supporting evidence, such as retrieved text or a tool result, for groundedness checks. |
+| `expected_behavior` | No | A rubric or specific instruction that the response should satisfy. |
+| `tool_calls` | No | Recorded execution steps for tool-use checks. |
+
+**Example input**
+
+```json
+{
+  "input": "Where is order #1042?",
+  "actual_output": "Your order shipped and will arrive tomorrow.",
+  "context": "Order #1042: Shipped. Estimated delivery date unavailable."
+}
+```
+
+Here, the answer is relevant to the question, but **"arrive tomorrow" is not supported by the supplied evidence**. AI Eval should preserve that distinction rather than reporting one opaque score.
+
+### Batch evaluation
+
+Developers can upload a file instead of copying responses one at a time. A minimal CSV format is:
+
+```csv
+input,actual_output
+"What is the refund policy?","Refunds are available within 30 days."
+"Where is order 1042?","It has shipped."
+```
+
+Optional reference fields can be added as columns; **JSON** is preferable for structured data such as tool calls or multiple context passages. Records will be normalized into the same internal test-case model used by Quick Evaluation.
+
+### Local setup (planned)
+
+Once the Docker configuration is implemented, the intended startup flow will be:
+
+```bash
+# Clone or fork the repository, then enter it
+cd ai-eval
+
+# Create your local environment file if AI judges are enabled
+cp .env.example .env
+
+# Start the local web interface
+docker compose up --build
+```
+
+Then open **http://localhost:8501** in a browser.
+
+> These are **planned setup instructions**. They will become runnable after the `Dockerfile`, `compose.yaml`, and Streamlit application have been implemented. AI-based judges may require API credentials and can incur provider charges. Never commit `.env` or API keys.
+
+## System architecture
+
+![AI Eval local system architecture](docs/diagrams/ai-eval-system-architecture.png)
+
+Docker packages the **Streamlit interface** and the **Python evaluation engine**. Streamlit gathers data and displays outcomes; evaluation code remains separate from the UI so it can be reused in future integrations.
 
 | Component | Responsibility |
 | --- | --- |
-| **Application Adapter** | Connects to the application under test or imports previously captured executions. |
-| **Dataset Manager** | Maintains test inputs, expected behaviors, reference facts, and human labels. |
-| **Evaluation Runner** | Executes scenarios and captures responses, tool calls, and available traces. |
-| **Evaluation Engine** | Runs deterministic assertions and AI-based evaluation metrics. |
-| **Judge Benchmarking** | Compares AI judges against human-labeled cases and analyzes disagreements. |
-| **Regression Analyzer** | Identifies quality changes between prompt, model, or application versions. |
-| **Report Generator** | Presents scores, failures, evidence, latency, and cost measurements. |
+| **Streamlit UI** | Quick input, dataset upload, metric selection, progress, and result display. |
+| **Dataset normalization** | Convert submitted fields or uploaded records into validated test cases. |
+| **Metric eligibility** | Determine which checks can run using the evidence available. |
+| **Evaluation runner** | Execute supported checks and collect their outcomes. |
+| **Deterministic evaluators** | Test explicit rules, schema validity, and supplied tool-call evidence. |
+| **AI evaluators** | Run appropriate DeepEval and other configured judging methods. |
+| **Judge benchmarking** | Compare judging approaches with human-labeled examples (planned). |
+| **Regression analyzer** | Compare compatible baseline and candidate results (planned). |
+| **Reporter** | Prepare results for Streamlit and local JSON/CSV exports. |
 
-**Important distinction:** LangChain is used to build the initial *application under test*. DeepEval is the evaluation framework; Jev is a judging approach within the evaluation design. AI Eval itself is the surrounding harness that connects applications, runs cases, aggregates outcomes, and produces reports. The exact Jev integration and supported judging modes will be validated during implementation.
+No FastAPI backend, hosted service, login system, or frontend framework is required for the first release.
 
-## How AI Eval tests an application
+## How evaluation works
 
-The first application under test will be a **fictional customer support agent** built with LangChain. It has three tools backed by simulated data to make tests reproducible:
+![AI Eval evaluation flow](docs/diagrams/ai-eval-execution-flow.png)
 
-| Tool | Purpose |
-| --- | --- |
-| `get_order_status` | Looks up an order's shipping status. |
-| `search_policy` | Retrieves the company's support policies. |
-| `create_support_ticket` | Creates a support request. |
+**The first version does not run the developer's AI application.** Developers supply responses that the app already generated; AI Eval scores the supplied results. This avoids requiring every AI application to expose the same endpoint or runtime integration.
 
-### 1. Connect to the application
+### 1. Submit evidence
 
-AI Eval is designed to support multiple integration methods:
+A developer enters a single response or uploads an evaluation dataset. Depending on the use case, a record may also include a reference answer, retrieved context, an expected tool call, or a saved execution trace.
 
-| Method | How it works | What can be evaluated |
+### 2. Normalize and validate
+
+Pydantic validates the fields. The evaluation engine checks whether each selected metric has the information it needs.
+
+| Evaluation | Minimum useful evidence | If evidence is missing |
 | --- | --- | --- |
-| **Direct Python** | Execute an imported AI application. | Responses and any instrumented execution traces. |
-| **HTTP API** | Send test requests to an application endpoint. | Usually final responses; internal tool use only if traces are exposed. |
-| **Saved executions** | Import recorded responses and tool calls. | The evidence present in the saved records. |
+| Response relevance | Input + actual response | Cannot run without both fields. |
+| Groundedness | Actual response + relevant supporting context | Mark **not evaluable**. |
+| Answer correctness | Actual response + expected answer or reference criteria | Mark **not evaluable**. |
+| Recorded tool-call correctness | Supplied tool trace + expected tool/arguments | Mark **not evaluable**. |
+| Instruction adherence | Actual response + applicable instructions/rubric | Mark **not evaluable** when those instructions are absent. |
 
-The initial design focuses on direct Python execution. API and saved-execution adapters are extension points—not a claim that any arbitrary application can be fully inspected.
+Some metrics may have additional library-specific requirements. **A missing trace must never be interpreted as proof that the agent used tools correctly.**
 
-### 2. Define evaluation scenarios
+### 3. Evaluate
 
-Each scenario specifies an **input**, **expected behavior**, and enough **reference information** to determine whether the application behaved acceptably.
+**Deterministic checks** validate things that can be established objectively from submitted evidence, such as field presence, JSON validity, exact values, or expected recorded tool calls. These checks will use Python and Pydantic, with Pytest used to test the harness itself.
 
-#### Example: `TC-001` — Order status lookup
+**AI-based checks** assess more nuanced behavior—such as relevance, grounding, and following instructions—using appropriate DeepEval metrics or configured judges. **Jev integration is an experimental part of the design** and will be enabled only for supported evaluation cases.
 
-| Field | Value |
-| --- | --- |
-| User input | “What's the shipping status of order #1042?” |
-| Expected tool | `get_order_status` |
-| Expected arguments | Order ID `1042` |
-| Mocked tool result | **Shipped**; estimated delivery date **unavailable**. |
-| Behavioral requirement | Report the retrieved status and do not invent delivery information. |
+### 4. Explain results
 
-The target dataset will contain approximately **25 scenarios** spanning normal requests, missing data, invalid tool arguments, incorrect tool selection, instruction adherence, and guardrail violations. Reference outcomes act as *ground truth* or *golden examples* for the checks they support.
+Each result should include the test-case ID, metric, score or pass/fail status, judging method, explanation where available, and evidence used. A failed case should help the developer understand **what went wrong**, rather than merely displaying a number.
 
-### 3. Run the application and capture evidence
+### Example result (illustrative)
 
-![AI Eval Execution Flow](docs/diagrams/ai-eval-execution-flow.svg)
+| Metric | Outcome | Reason |
+| --- | --- | --- |
+| Response relevance | Pass | The reply concerns the requested order. |
+| Groundedness | Fail | The submitted context provides no arrival date. |
+| Tool correctness | Not evaluable | No tool-call trace was supplied. |
 
-The agent selected the correct tool and supplied the correct order ID, but **invented a delivery date**. It should pass the tool-call checks and fail the evaluation for unsupported information.
+*Illustrative evaluation logic, not the output of an implemented run.*
 
-That distinction is the heart of the project: an agent can do part of a task correctly while still giving an unreliable final answer.
+## Guardrails and agent evaluations
 
-## Evaluation layers
+AI Eval can test application-specific constraints when those constraints are supplied as explicit rules or rubrics. For example, a support agent might be required to **avoid promising refunds without verification**. A deterministic check can validate observable tool records; an AI judge can assess unsupported claims in the response.
 
-### Layer 1 — Deterministic evaluation
+The tool **cannot independently inspect hidden agent steps** using only the final response. Developers must supply recorded tool calls or traces to enable tool-use evaluation.
 
-Deterministic checks verify facts that can be directly established from the execution evidence. They use **Python, Pytest, and Pydantic**, without requiring a second AI model to judge the result.
+## Judge benchmarking (planned)
 
-| Check | Example outcome for `TC-001` |
-| --- | --- |
-| Correct tool selected? | **Pass** — `get_order_status` was called. |
-| Correct order ID supplied? | **Pass** — `1042` was used. |
-| Tool argument schema valid? | **Pass** — arguments match the expected structure. |
-| Required tool step performed? | **Pass** — the order lookup occurred. |
+AI-based judges can disagree with one another and with human reviewers. A future benchmarking module will compare judge decisions against a small human-labeled dataset, examining:
 
-A deterministic test should only claim what its available evidence proves. For example, validating a tool trace does **not** prove that the final natural-language response is accurate.
+- Agreement with reference labels.
+- False passes and false failures.
+- Disagreement cases and sensitivity to the judging rubric.
+- Latency and available evaluation cost measurements.
 
-### Layer 2 — AI-based evaluation
+These metrics help characterize judge reliability; **they do not make an AI judge infallible**.
 
-Some quality questions are not conveniently expressed as exact-match rules:
+## Regression testing (planned)
 
-- Is the response supported by the tool results or retrieved evidence?
-- Did the agent follow the user's intent and applicable instructions?
-- Is the response relevant and appropriately complete?
-- Did the agent make claims it cannot substantiate?
+A developer can compare results from two sets of responses, for example outputs generated by **prompt v1** and **prompt v2**, using the same cases, metrics, and rubric.
 
-These judgments will be orchestrated with **DeepEval**, using suitable LLM-based metrics and exploring **Jev** and hybrid approaches where supported.
+![AI Eval regression comparison](docs/diagrams/ai-eval-regression-flow.svg)
 
-| Judging approach | Concept |
-| --- | --- |
-| **LLM judge** | An LLM evaluates the application's output against a rubric or expected behavior. |
-| **Jev judge** | A probabilistic judge makes bounded decisions for suitable evaluation questions. |
-| **Hybrid judge** | Combines LLM-based interpretation with Jev-based decisions, where compatible. |
-
-AI-generated judgments are **not ground truth**. They can be inconsistent or incorrect, which is why AI Eval also measures the quality of the judges themselves.
-
-### Guardrail evaluation
-
-The harness will test whether an application respects its own constraints, including:
-
-- Following support policies instead of making unsupported commitments.
-- Avoiding fabricated facts when the required information is unavailable.
-- Rejecting or safely handling invalid tool requests.
-- Maintaining instruction adherence under confusing or adversarial inputs.
-
-Where a rule is directly observable, use deterministic assertions. Where interpretation is required, use a judged metric and investigate borderline cases.
-
-## Judge benchmarking: evaluating the evaluators
-
-A reliable evaluation framework cannot assume its judges are always right. AI Eval will use a small **human-labeled benchmark** and compare each judge's decisions against those labels.
-
-| Example scenario | Human label | LLM judge | Jev judge |
-| --- | --- | --- | --- |
-| Correct order status | Pass | Pass | Pass |
-| Invented delivery date | Fail | Fail | Fail |
-| Unnecessary tool call | Fail | Pass | Fail |
-| Properly declines unsupported action | Pass | Pass | Fail |
-
-*Illustrative labels only; not an experimental result.*
-
-The report will examine **agreement with human labels**, **false passes / false failures**, **judge disagreements**, **latency**, and **evaluation cost**. Disagreements will be reviewed rather than automatically resolved by majority vote.
-
-## Regression testing
-
-AI Eval will compare different versions of an application using the **same evaluation cases**. This helps answer a critical question: *Did the latest prompt, model, or tool change improve the application—or make something worse?*
-
-
-![AI Eval Regression Testing](docs/diagrams/ai-eval-regression-flow.svg)
-
-### Example regression report
-
-| Metric | Version 1 | Version 2 | Interpretation |
+| Metric | Baseline v1 | Candidate v2 | Interpretation |
 | --- | ---: | ---: | --- |
 | Tool correctness | 90% | 96% | Improved |
 | Instruction adherence | 94% | 81% | **Regressed** |
 | Task completion | 88% | 91% | Improved |
 
-**Illustrative outcome:** Review required. Better tool selection does not excuse a meaningful drop in instruction adherence.
+*Illustrative numbers only, not measured results.*
 
-Because AI behavior is not perfectly repeatable, selected tests should be run multiple times under controlled conditions. Comparisons should use consistent datasets, evaluator configurations, and scoring thresholds.
+Results should be compared under consistent evaluation conditions. Selected cases may need repeated judging because AI outputs and judge scores can vary.
 
-## Expected evaluation report
+## Technology stack
 
-A completed run should answer:
+| Technology | Responsibility |
+| --- | --- |
+| **Python** | Core evaluation engine and reusable modules. |
+| **Streamlit** | Local web UI for inputs, metric selection, and results. |
+| **Docker / Docker Compose** | Package and run AI Eval locally. |
+| **uv** | Manage Python versions, dependencies, and locking. |
+| **Pydantic** | Validate evaluation records and settings. |
+| **DeepEval** | AI-based evaluations and metric integrations. |
+| **Jev (TypeSafe AI)** | Optional/experimental probabilistic judging, where supported. |
+| **Pytest** | Automated tests for deterministic rules and project behavior. |
+| **Pandas** | Read, transform, and summarize evaluation datasets. |
+| **Plotly** | Optional interactive charts for evaluation results. |
 
-1. **Did the application satisfy each test case?** Show deterministic pass/fail results and judged scores.
-2. **Why did it fail?** Include the evidence, relevant tool trace, and judge explanation when available.
-3. **How trustworthy is the judge?** Summarize agreement and disagreements against labeled examples.
-4. **Did a new version regress?** Surface metric changes and cases that changed from passing to failing.
-5. **What did the run cost?** Report available latency and token/cost measurements, with missing measurements explicitly noted.
+LangChain is **not required** to use AI Eval. It may be used separately to construct an example app for demonstration.
 
-Reports are planned in **JSON and human-readable HTML**, rather than requiring a full web dashboard.
+## Proposed repository structure
 
-## Scope and constraints
+```text
+ai-eval/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── .env.example
+├── pyproject.toml
+├── uv.lock
+├── Dockerfile
+├── compose.yaml
+├── ui/
+│   └── app.py
+├── src/
+│   └── ai_eval/
+│       ├── __init__.py
+│       ├── datasets/
+│       ├── runner/
+│       ├── evaluators/
+│       ├── benchmarking/
+│       ├── regression/
+│       └── reporting/
+├── examples/
+│   └── sample-evaluations.json
+├── tests/
+└── docs/
+    └── diagrams/
+        ├── ai-eval-system-architecture.svg
+        ├── ai-eval-execution-flow.svg
+        └── ai-eval-regression-flow.svg
+```
 
-**In scope**
+## Scope of the initial release
 
-- A reusable Python harness around an initial LangChain test agent.
-- Dataset-driven execution with reproducible mocked tools.
-- Deterministic and AI-based evaluation layers.
-- Guardrail checks and evaluation failure analysis.
-- Small-scale benchmarking against human labels.
-- Baseline-versus-candidate regression comparisons.
-- Exportable evaluation reports.
+**Primary v0.1 goals:** Quick Evaluation, batch JSON/CSV upload, dataset validation, evidence-aware metric selection, at least one deterministic check, selected DeepEval metrics, basic result display, local report exports, and a Dockerized Streamlit app.
 
-**Out of scope for the initial implementation**
+**Planned extensions:** Jev judge comparison, regression analysis, richer guardrail test suites, direct Python/API integrations, and more advanced reporting.
 
-- Building a production SaaS platform, authentication, or billing.
-- A custom database or frontend dashboard.
-- Reimplementing DeepEval's underlying metrics.
-- Claiming visibility into third-party agents' internal tool calls when only their final responses are available.
-- Treating an LLM or probabilistic judge's score as unquestionable truth.
+**Not planned for v0.1:** A hosted SaaS platform, FastAPI service, authentication, billing, a custom-trained ML model, or a required CLI.
+
+### Privacy and limitations
+
+- Uploaded datasets are processed by an application running on the developer's machine, but **configured AI judging providers may receive the content sent for scoring**. Do not submit sensitive data without reviewing provider settings and data handling.
+- Docker does not automatically make an evaluation fully offline; model-based evaluation may require network access and incur cost.
+- Unsupported checks should be labeled **not evaluable**, not silently passed.
+- Regression and judge benchmarking results depend on the quality of reference labels and evaluation rubrics.
 
 ## Why this project matters
 
-AI Eval is built around three engineering questions:
+AI Eval is built to help developers answer three questions:
 
-> **Does my AI application behave correctly?**  
-> **Can I trust the evaluation method enough to use its results?**  
-> **Did my latest change improve or degrade reliability?**
+1. **Does my AI application behave as intended?**
+2. **What evidence supports or contradicts the evaluation?**
+3. **Did a change improve or reduce reliability?**
 
-The goal is not to make another chatbot. It is to build the **testing infrastructure that helps developers understand whether their AI systems are reliable enough to ship**.
-
+The long-term goal is to make **AI application testing reproducible, understandable, and easy to use locally**, without making developers build an evaluation system from scratch.
 
 ## Author
 
-**Michael Olubode**
-
-Software Engineer | AI Engineer
-
-Built as a hands-on project to explore AI evaluation,
-agent reliability, and regression testing.
+**Michael Olubode**  
+Software Engineer · AI Engineer
 
 ## License
 
-This project is licensed under the MIT License.
-
-See the [LICENSE](LICENSE) file for more details.
-
-Copyright © 2026 Michael Olubode.
+Licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
